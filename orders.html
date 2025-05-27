@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Orders - Online Food Ordering System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --text-color: #2d3436;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 32px rgba(30,30,47,0.12);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+        }
+
+        .orders-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .orders-title {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            background: var(--light-bg);
+            color: var(--text-color);
+            border: none;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .orders-section {
+            margin-bottom: 2.5rem;
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(30,30,47,0.04);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30,30,47,0.08);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .order-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .status-pending { background: #fff3cd; color: #f39c12; }
+        .status-paid { background: #d1ecf1; color: #17a2b8; }
+        .status-processing { background: #cce5ff; color: #004085; }
+        .status-shipped { background: #d6d8db; color: #343a40; }
+        .status-delivered { background: #d4edda; color: #2ecc71; }
+        .status-cancelled { background: #f8d7da; color: #e74c3c; }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: 500;
+        }
+
+        .order-items {
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .order-items ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .order-items li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .order-item-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f0f0f0;
+            margin-right: 10px;
+            flex-shrink: 0;
+            border: 1px solid #eee;
+        }
+
+        @media (max-width: 600px) {
+            .order-item-img {
+                width: 36px;
+                height: 36px;
+                margin-right: 6px;
+            }
+        }
+
+        .order-items li:last-child {
+            border-bottom: none;
+        }
+
+        .cancel-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            z-index: 1000;
+            animation: toastSlideIn 0.3s ease;
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--success-color);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--danger-color);
+        }
+
+        @media (max-width: 768px) {
+            .orders-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .orders-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .toast {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+            }
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .no-orders i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
+
+        .modal-feedback-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30,30,47,0.25);
+            backdrop-filter: blur(2px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInOverlay 0.3s;
+        }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-feedback-content {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(30,30,47,0.18);
+            max-width: 350px;
+            width: 92vw;
+            text-align: center;
+            padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+            position: relative;
+            animation: popInModal 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @keyframes popInModal {
+            0% { transform: scale(0.7); opacity: 0; }
+            80% { transform: scale(1.08); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .modal-feedback-icon {
+            font-size: 3.2rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-feedback-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .modal-feedback-message {
+            font-size: 1.08rem;
+            color: #444;
+            margin-bottom: 1.2rem;
+        }
+        .modal-feedback-btn {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 2.2rem;
+            font-size: 1.08rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(255,107,107,0.08);
+        }
+        .modal-feedback-btn:hover {
+            background: var(--primary-hover);
+        }
+        .modal-feedback-close {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #bbb;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-feedback-close:hover {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="orders-container">
+        <div class="orders-header">
+            <h1 class="orders-title">My Orders</h1>
+            <a href="dashboard.html" class="back-btn">
+                <i class="uil uil-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <div class="orders-section" id="newOrdersSection">
+            <div class="section-header">
+                <h2 class="section-title">Active Orders</h2>
+            </div>
+            <div id="newOrdersList"></div>
+        </div>
+
+        <div class="orders-section" id="recentOrdersSection">
+            <div class="section-header">
+                <h2 class="section-title">Order History</h2>
+            </div>
+            <div id="recentOrdersList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="cancelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Cancel Order</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelModalClose">No, Keep Order</button>
+                <button class="btn btn-danger" id="confirmCancel">Yes, Cancel Order</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-feedback-overlay" id="orderFeedbackModal">
+        <div class="modal-feedback-content">
+            <button class="modal-feedback-close" id="closeFeedbackModal" aria-label="Close">&times;</button>
+            <div class="modal-feedback-icon" id="feedbackModalIcon"></div>
+            <div class="modal-feedback-title" id="feedbackModalTitle">Order Update</div>
+            <div class="modal-feedback-message" id="feedbackModalBody"></div>
+            <button class="modal-feedback-btn" id="feedbackModalOk">OK</button>
+        </div>
+    </div>
+
+    <script src="assets/js/jquery-3.5.1.min.js"></script>
+    <script>
+        let currentOrderId = null;
+
+        function loadUserOrders() {
+            const email = localStorage.getItem('userEmail');
+            const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const userOrders = allOrders.filter(order => order.userEmail === email);
+
+            // Track last seen status for each order
+            let lastSeenStatuses = JSON.parse(localStorage.getItem('lastSeenOrderStatuses_' + email) || '{}');
+            let feedbackToShow = null;
+
+            userOrders.forEach(order => {
+                const prevStatus = lastSeenStatuses[order.orderId];
+                const currentStatus = order.status?.toLowerCase();
+                if ((currentStatus === 'approved' || currentStatus === 'declined') && prevStatus !== currentStatus) {
+                    // Only show feedback for new status
+                    if (!feedbackToShow) {
+                        feedbackToShow = currentStatus;
+                    }
+                }
+                // Update last seen status
+                lastSeenStatuses[order.orderId] = currentStatus;
+            });
+            localStorage.setItem('lastSeenOrderStatuses_' + email, JSON.stringify(lastSeenStatuses));
+            if (feedbackToShow) {
+                setTimeout(() => showOrderFeedbackModal(feedbackToShow), 300);
+            }
+
+            const activeOrders = userOrders.filter(order => 
+                ['pending', 'preparing', 'processing'].includes(order.status?.toLowerCase())
+            );
+            const completedOrders = userOrders.filter(order => 
+                ['completed', 'cancelled', 'approved', 'declined'].includes(order.status?.toLowerCase())
+            );
+
+            function getStatusClass(status) {
+                status = status?.toLowerCase();
+                if (status === 'pending') return 'status-pending';
+                if (status === 'paid') return 'status-paid';
+                if (status === 'processing') return 'status-processing';
+                if (status === 'shipped') return 'status-shipped';
+                if (status === 'delivered') return 'status-delivered';
+                if (status === 'cancelled') return 'status-cancelled';
+                return 'status-pending';
+            }
+
+            function getStatusText(status) {
+                status = status?.toLowerCase();
+                if (status === 'pending') return 'Pending';
+                if (status === 'paid') return 'Paid';
+                if (status === 'processing') return 'Processing';
+                if (status === 'shipped') return 'Shipped';
+                if (status === 'delivered') return 'Delivered';
+                if (status === 'cancelled') return 'Cancelled';
+                return status ? status.charAt(0).toUpperCase() + status.slice(1) : '';
+            }
+
+            function renderOrders(orders, $container, emptyMsg) {
+                $container.empty();
+                if (orders.length === 0) {
+                    $container.html(`
+                        <div class="no-orders">
+                            <i class="uil uil-box"></i>
+                            <p>${emptyMsg}</p>
+                        </div>
+                    `);
+                    return;
+                }
+
+                orders.slice().reverse().forEach(order => {
+                    // Debug: log order status
+                    console.log('Order', order.orderId, 'status:', order.status);
+                    const canCancel = ['pending', 'preparing'].includes(order.status?.toLowerCase());
+                    const itemsHtml = order.items.map(item => `
+                        <li>
+                            <img src="${item.image || 'assets/images/no-image.png'}" alt="${item.name}" class="order-item-img">
+                            <span style="flex:1;">${item.name}</span>
+                            <span class="text-muted">x${item.quantity}</span>
+                        </li>
+                    `).join('');
+
+                    let feedbackHtml = '';
+                    if (order.status?.toLowerCase() === 'declined') {
+                        feedbackHtml = `<div class="alert alert-danger mt-2" style="border-radius:8px;">Sorry, this item is not available.</div>`;
+                    } else if (order.status?.toLowerCase() === 'approved') {
+                        feedbackHtml = `<div class="alert alert-success mt-2" style="border-radius:8px;">Thank you for ordering!</div>`;
+                    }
+
+                    $container.append(`
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-id">${order.orderId}</div>
+                                <div class="order-status ${getStatusClass(order.status)}">${getStatusText(order.status)}</div>
+                            </div>
+                            <div class="order-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Order Date</div>
+                                    <div class="detail-value">${new Date(order.orderDate).toLocaleDateString()}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Total Amount</div>
+                                    <div class="detail-value">₱ ${typeof order.totalAmount === 'number' ? order.totalAmount.toFixed(2) : calculateOrderTotal(order)}</div>
+                                </div>
+                            </div>
+                            <div class="order-items">
+                                <ul>${itemsHtml}</ul>
+                            </div>
+                            <div class="order-footer">
+                                ${canCancel ? `<button class="btn btn-danger cancel-btn" data-order-id="${order.orderId}">Cancel</button>` : ''}
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+
+            renderOrders(activeOrders, $('#newOrdersList'), 'No active orders found.');
+            renderOrders(completedOrders, $('#recentOrdersList'), 'No order history found.');
+        }
+
+        $(document).ready(function() {
+            loadUserOrders();
+
+            $('#cancelModalClose').click(hideCancelModal);
+            $('#confirmCancel').click(cancelOrder);
+
+            $(window).click(function(e) {
+                if ($(e.target).is('#cancelModal')) {
+                    hideCancelModal();
+                }
+            });
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'orders') {
+                    loadUserOrders();
+                }
+            });
+
+            // Also reload orders when the page regains focus (user switches tab)
+            window.addEventListener('focus', function() {
+                loadUserOrders();
+            });
+        });
+
+        function showOrderFeedbackModal(type) {
+            let icon = '', title = '', message = '';
+            if (type === 'approved') {
+                icon = '<i class="uil uil-check-circle" style="color:#2ecc71;"></i>';
+                title = 'Order Approved';
+                message = 'Thank you for your order! We\'re preparing it for you.';
+            } else if (type === 'declined') {
+                icon = '<i class="uil uil-times-circle" style="color:#e74c3c;"></i>';
+                title = 'Order Declined';
+                message = 'Sorry, this item is not available at the moment.';
+            }
+            $('#feedbackModalIcon').html(icon);
+            $('#feedbackModalTitle').text(title);
+            $('#feedbackModalBody').text(message);
+            $('#orderFeedbackModal').fadeIn(200).css('display','flex');
+        }
+        $('#closeFeedbackModal, #feedbackModalOk').click(function() {
+            $('#orderFeedbackModal').fadeOut(200);
+        });
+        $(window).click(function(e) {
+            if ($(e.target).is('#orderFeedbackModal')) {
+                $('#orderFeedbackModal').fadeOut(200);
+            }
+        });
+
+        function calculateOrderTotal(order) {
+            if (!order || !order.items) return '0.00';
+            let subtotal = 0;
+            order.items.forEach(item => {
+                subtotal += (item.price || 0) * (item.quantity || 1);
+            });
+            // Assume delivery fee if orderType is delivery, else 0
+            let deliveryFee = (order.orderType === 'delivery' || order.address) ? 50 : 0;
+            let total = subtotal + deliveryFee;
+            if (total > 9999999) total = 9999999;
+            return total.toFixed(2);
+        }
+    </script>
+</body>
+</html>
